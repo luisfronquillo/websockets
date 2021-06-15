@@ -5,6 +5,8 @@ provider:
     runtime: nodejs12.x
     environment:
         tableName: ${self:custom.tableName}
+        queueResponse_url:
+            Ref: QueueResponse
     iamRoleStatements:
         - Effect: Allow
           Action:
@@ -13,6 +15,7 @@ provider:
 
 custom:
     tableName: WebsocketUsers
+    queueName: QueueResponse
 
 functions:
     websocket-connect:
@@ -35,8 +38,17 @@ functions:
         events:
             - websocket:
                   route: message
-    websocket-replymessage:
-        handler: lambdas/websockets/replymessages.handler
+    handler-response:
+        handler: lambdas/websockets/handlerResponse.handler
+        events:
+            - sqs:
+                batchSize: 10
+                arn:
+                    Fn::GetAtt:
+                    - ResponseQueue
+                    - Arn
+        
+                        
         
 resources:
     Resources:
@@ -51,3 +63,8 @@ resources:
                     - AttributeName: ID
                       KeyType: HASH
                 BillingMode: PAY_PER_REQUEST
+        ResponseQueue:
+            Type: AWS::SQS::Queue
+            Properties:
+                QueueName: ${self:custom.queueName}-dev
+    

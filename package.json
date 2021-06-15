@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "description": "",
     "dependencies": {
-        "serverless": "^1.60.4",
         "aws-sdk": "^2.927.0"
     }
 }
