@@ -3,10 +3,12 @@ service: myserverlessproject2
 provider:
     name: aws
     runtime: nodejs12.x
+    stage: dev
     environment:
-        tableName: ${self:custom.tableName}
-        queueResponse_url:
-            Ref: QueueResponse
+        stage: ${self:provider.stage}
+        tableName: ${self:custom.tableName}        
+        wsapiname: ${self:provider.websocketsApiName}
+    websocketsApiName: ${self:service}-WS
     iamRoleStatements:
         - Effect: Allow
           Action:
